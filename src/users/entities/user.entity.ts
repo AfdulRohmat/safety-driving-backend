@@ -1,6 +1,9 @@
 import { IsEmail } from "class-validator";
-import { Column, CreateDateColumn, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, JoinTable, ManyToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Role } from "./role.entity";
+import { DetailUser } from "./detail-user.entity";
+
+
 
 @Entity('users')
 export class User {
@@ -14,7 +17,7 @@ export class User {
     @IsEmail({}, { message: "Invalid Email" })
     email: string
 
-    @Column()
+    @Column({ select: false })
     password: string
 
     @Column({ name: "is_verified", default: false })
@@ -22,7 +25,8 @@ export class User {
 
     @Column({
         name: "activation_code",
-        default: null
+        default: null,
+        select: false
     })
     activationCode: number
 
@@ -30,7 +34,11 @@ export class User {
     @JoinTable()
     roles: Role[];
 
-    @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+    @OneToOne(() => DetailUser, (detailUser) => detailUser.user, { cascade: true })
+    @JoinColumn({ name: 'detail_user_id' })
+    detailUser: DetailUser;
+
+    @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP'})
     createdAt: Date;
 
     @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
