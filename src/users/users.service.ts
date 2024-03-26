@@ -1,13 +1,14 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { RegisterRequestDTO } from '../auth/dto/request/register-request.dto';
 import { Role } from './entities/role.entity';
 import { UserDetailResponseDTO } from './dto/response/user-detail-response.dto';
 import { DetailUser, JenisKelaminEnum } from './entities/detail-user.entity';
 import { AddDetailUserRequestDTO } from './dto/request/add-detail-user-request.dto';
 import { EditDetailUserRequestDTO } from './dto/request/edit-detail-user-request.dto';
+import { GetAllUsersResponseDTO } from './dto/response/get-all-users-response.dto';
 
 
 @Injectable()
@@ -124,6 +125,27 @@ export class UsersService {
             where: { email: email }, relations: ['detailUser']
         })
 
+    }
+
+    async getAllUsers(searchTerm?: string): Promise<GetAllUsersResponseDTO[]> {
+        let query = {};
+
+        if (searchTerm) {
+            query = {
+                where: [
+                    { email: Like(`%${searchTerm}%`) },
+                    { username: Like(`%${searchTerm}%`) },
+                ],
+            };
+        }
+        const users = await this.userRepository.find(query);
+
+        return users.map(user => ({
+            id: user.id,
+            username: user.username,
+            email: user.email,
+            isVerified: user.isVerified
+        }))
     }
 
     async getHello() {

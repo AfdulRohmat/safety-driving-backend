@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Request, Res, UseGuards, UseInterceptors, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Request, Res, UseGuards, UseInterceptors, Put, Query } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { Response } from 'express';
 import { UserDetailResponseDTO } from './dto/response/user-detail-response.dto';
@@ -52,6 +52,18 @@ export class UsersController {
     } catch (error) {
       throw response.status(error.status).json(error.response);
       // throw response.json(error);
+    }
+  }
+
+  @UseGuards(JwtGuard)
+  @Get('all-users')
+  async getAllUsers(@Request() request: any, @Res() response: Response, @Query('search') searchTerm?: string,) {
+    try {
+      const responseData = await this.usersService.getAllUsers(searchTerm);
+      const successResponse = new CommonResponseDto(200, 'Proses berhasil', responseData, null);
+      return response.status(successResponse.statusCode).json(successResponse);
+    } catch (error) {
+      response.status(error.status).json(error.response);
     }
   }
 

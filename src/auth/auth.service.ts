@@ -17,8 +17,10 @@ export class AuthService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+
     @InjectRepository(Role)
     private readonly roleRepository: Repository<Role>,
+
     private emailService: EmailService,
     private jwtService: JwtService,
   ) { }
@@ -53,25 +55,22 @@ export class AuthService {
   }
 
   async activateAccount(request: ActivateAccountRequestDTO): Promise<RegisterResponseDTO> {
-    // find user base on email, if not exist, throw error
     const user = await this.userRepository.findOneOrFail({
       where: {
         email: request.email
       }
     })
 
-    // check if the email alreadt verified or not, if verified throw error
+    console.log(request)
+
+
     if (user.isVerified) {
-      // throw new HttpException('', HttpStatus.BAD_REQUEST);
       throw new BadRequestException('Proses gagal', { cause: new Error(), description: 'Akun sudah terverifikasi. Silahkan login' })
     }
 
-    // check activation code that store inside db before
     if (user.activationCode == request.activationCode) {
-      // if match, set isVerified to be true
       user.isVerified = true;
       await this.userRepository.save(user);
-
       return new ActivateAccountResponseDTO(user.email, "Aktivasi akun berhasil, silahkan login")
     } else {
       throw new BadRequestException('Proses gagal', { cause: new Error(), description: 'Kode aktivasi tidak valid' })

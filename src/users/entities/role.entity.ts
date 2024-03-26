@@ -1,13 +1,10 @@
-import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { User } from "./user.entity";
+import { GroupMember } from "src/groups/entities/group-member.entity";
 
 export enum UserRole {
     USER = 'ROLE_USER',
-    ADMIN = 'ROLE_ADMIN',
-    DRIVER = 'ROLE_DRIVER',
-    COMPANY = 'ROLE_COMPANY',
-    FAMILY = 'ROLE_FAMILY',
-    MEDIC = 'ROLE_MEDIC',
+    ADMIN = 'ROLE_ADMIN'
 }
 
 @Entity({ name: 'roles' })
@@ -20,4 +17,5 @@ export class Role {
 
     @ManyToMany(() => User, (user) => user.roles)
     users: User[];
+
 }

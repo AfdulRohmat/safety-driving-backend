@@ -1,7 +1,9 @@
 import { IsEmail } from "class-validator";
-import { Column, CreateDateColumn, Entity, JoinColumn, JoinTable, ManyToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, JoinTable, ManyToMany, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Role } from "./role.entity";
 import { DetailUser } from "./detail-user.entity";
+import { GroupMember } from "src/groups/entities/group-member.entity";
+import { Group } from "src/groups/entities/group.entity";
 
 
 
@@ -17,7 +19,7 @@ export class User {
     @IsEmail({}, { message: "Invalid Email" })
     email: string
 
-    @Column({ select: false })
+    @Column()
     password: string
 
     @Column({ name: "is_verified", default: false })
@@ -25,8 +27,7 @@ export class User {
 
     @Column({
         name: "activation_code",
-        default: null,
-        select: false
+        default: null
     })
     activationCode: number
 
@@ -38,7 +39,10 @@ export class User {
     @JoinColumn({ name: 'detail_user_id' })
     detailUser: DetailUser;
 
-    @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP'})
+    @OneToMany(() => GroupMember, groupMember => groupMember.user)
+    groupMembers: GroupMember[];
+
+    @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     createdAt: Date;
 
     @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })

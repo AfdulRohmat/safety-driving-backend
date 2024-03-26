@@ -10,9 +10,9 @@ export class UserDetailResponseDTO {
         email: string,
         isVerified: boolean,
         roles: Role[]) {
-        this.username = username,
-            this.email = email,
-            this.isVerified = isVerified,
-            this.roles = roles
+        this.username = username
+        this.email = email
+        this.isVerified = isVerified
+        this.roles = roles
     }
 }
