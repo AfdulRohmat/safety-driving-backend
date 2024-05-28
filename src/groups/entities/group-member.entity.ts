@@ -1,7 +1,6 @@
 import { User } from "src/users/entities/user.entity";
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Group } from "./group.entity";
-import { Vehicle } from "src/vehicle/entities/vehicle.entity";
 
 export enum GroupRole {
     DRIVER = 'ROLE_DRIVER',

@@ -4,4 +4,7 @@ export class CreateGroupRequestDTO {
     @IsNotEmpty()
     nama_group: string
 
+    @IsNotEmpty()
+    description: string
+
 }

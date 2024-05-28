@@ -15,21 +15,22 @@ import { EmailModule } from './email/email.module';
 import { GroupsModule } from './groups/groups.module';
 import { Group } from './groups/entities/group.entity';
 import { GroupMember } from './groups/entities/group-member.entity';
-import { VehicleModule } from './vehicle/vehicle.module';
-import { Vehicle } from './vehicle/entities/vehicle.entity';
 import { SensorPotensioModule } from './sensor-potensio/sensor-potensio.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { TripsModule } from './trips/trips.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({}),
-    TypeOrmModule.forFeature([User, Role, DetailUser, Group, GroupMember, Vehicle]),
+    ScheduleModule.forRoot(),
+    TypeOrmModule.forFeature([User, Role, DetailUser, Group, GroupMember]),
     DatabaseModule,
     UsersModule,
     AuthModule,
     EmailModule,
     GroupsModule,
-    VehicleModule,
     SensorPotensioModule,
+    TripsModule
   ],
   controllers: [AppController],
   providers: [AppService, IsUniqueConstraint],

@@ -45,8 +45,13 @@ export class SensorPotensioService {
     }
   }
 
-  findAll() {
-    return `This action returns all sensorPotensio`;
+
+  async findAll(): Promise<SensorPotensio[]> {
+    const data: SensorPotensio[] = await this.sensorPotensioRepository.find({
+      order: { createdAt: 'DESC' },
+    });
+
+    return data;
   }
 
   findOne(id: number) {

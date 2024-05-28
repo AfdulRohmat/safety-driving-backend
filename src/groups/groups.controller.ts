@@ -19,51 +19,38 @@ export class GroupsController {
   @Post("/")
   @UseInterceptors(NoFilesInterceptor())
   async createGroup(@Request() request: any, @Body() createGroupRequestDTO: CreateGroupRequestDTO, @Res() response: Response) {
-    try {
-      const responseData: Group = await this.groupsService.createGroup(request.user.username, createGroupRequestDTO)
-      const successResponse = new CommonResponseDto(200, 'Proses berhasil', responseData, null);
-      return response.status(successResponse.statusCode).json(successResponse);
-    } catch (error) {
-      response.json(error);
-    }
+    const responseData: Group = await this.groupsService.createGroup(request.user.username, createGroupRequestDTO)
+    const successResponse = new CommonResponseDto(200, 'Proses berhasil', responseData, null);
+    return response.status(successResponse.statusCode).json(successResponse);
+
   }
 
   @UseGuards(JwtGuard)
   @Get("/")
   @UseInterceptors(NoFilesInterceptor())
   async getGroupsByUserLogin(@Request() request: any, @Res() response: Response) {
-    try {
-      const responseData: GroupMember[] = await this.groupsService.getGroupsByUserLogin(request.user.username)
-      const successResponse = new CommonResponseDto(200, 'Proses berhasil', responseData, null);
-      return response.status(successResponse.statusCode).json(successResponse);
-    } catch (error) {
-      response.json(error);
-    }
+    const responseData: GroupMember[] = await this.groupsService.getGroupsByUserLogin(request.user.username)
+    const successResponse = new CommonResponseDto(200, 'Proses berhasil', responseData, null);
+    return response.status(successResponse.statusCode).json(successResponse);
+
   }
 
   @UseGuards(JwtGuard)
   @Post("/adding-user")
   @UseInterceptors(NoFilesInterceptor())
   async addUserToGroupMemberByUsername(@Body() addingUserToGroupMemberRequestDTO: AddingUserToGroupMemberRequestDTO, @Res() response: Response) {
-    try {
-      const responseData: GroupMember = await this.groupsService.addUserToGroupMemberByUsername(addingUserToGroupMemberRequestDTO)
-      const successResponse = new CommonResponseDto(200, 'Proses berhasil', responseData, null);
-      return response.status(successResponse.statusCode).json(successResponse);
-    } catch (error) {
-      response.json(error);
-    }
+    const responseData: GroupMember = await this.groupsService.addUserToGroupMemberByUsername(addingUserToGroupMemberRequestDTO)
+    const successResponse = new CommonResponseDto(200, 'Proses berhasil', responseData, null);
+    return response.status(successResponse.statusCode).json(successResponse);
   }
 
   @UseGuards(JwtGuard)
   @Post("/detail")
   @UseInterceptors(NoFilesInterceptor())
   async getDetailGroup(@Body() getDetailGroupRequestDTO: GetDetailGroupRequestDTO, @Res() response: Response) {
-    try {
-      const responseData: Group = await this.groupsService.getDetailGroup(getDetailGroupRequestDTO)
-      const successResponse = new CommonResponseDto(200, 'Proses berhasil', responseData, null);
-      return response.status(successResponse.statusCode).json(successResponse);
-    } catch (error) {
-      response.json(error);
-    }
+    const responseData: Group = await this.groupsService.getDetailGroup(getDetailGroupRequestDTO)
+    const successResponse = new CommonResponseDto(200, 'Proses berhasil', responseData, null);
+    return response.status(successResponse.statusCode).json(successResponse);
+
   }
 }

@@ -16,67 +16,46 @@ export class UsersController {
   @Get('info')
   @UseInterceptors(NoFilesInterceptor())
   async getUser(@Request() request: any, @Res() response: Response) {
-    try {
-      console.log("request.user :", request.user)
-      const responseData: UserDetailResponseDTO = await this.usersService.getUser(request.user.username);
-      const successResponse = new CommonResponseDto(200, 'Proses berhasil', responseData, null);
-      return response.status(successResponse.statusCode).json(successResponse);
-    } catch (error) {
-      console.log(error)
-      response.json(error);
-    }
+    const responseData: UserDetailResponseDTO = await this.usersService.getUser(request.user.username);
+    const successResponse = new CommonResponseDto(200, 'Proses berhasil', responseData, null);
+    return response.status(successResponse.statusCode).json(successResponse);
   }
 
   @UseGuards(JwtGuard)
   @Post('detail-user')
   @UseInterceptors(NoFilesInterceptor())
   async addDetailUserInfo(@Request() request: any, @Body() addDetailUserRequestDTO: AddDetailUserRequestDTO, @Res() response: Response) {
-    try {
-      const responseData = await this.usersService.addDetailUserInfo(request.user.username, addDetailUserRequestDTO);
-      const successResponse = new CommonResponseDto(200, 'Proses berhasil', responseData, null);
-      return response.status(successResponse.statusCode).json(successResponse);
-    } catch (error) {
-      // response.status(error.status).json(error.response);
-      response.json(error);
-    }
+    const responseData = await this.usersService.addDetailUserInfo(request.user.username, addDetailUserRequestDTO);
+    const successResponse = new CommonResponseDto(200, 'Proses berhasil', responseData, null);
+    return response.status(successResponse.statusCode).json(successResponse);
+
   }
 
   @UseGuards(JwtGuard)
   @Put('detail-user')
   @UseInterceptors(NoFilesInterceptor())
   async editDetailUserInfo(@Request() request: any, @Body() editDetailUserRequestDTO: EditDetailUserRequestDTO, @Res() response: Response) {
-    try {
-      const responseData = await this.usersService.editDetailUserInfo(request.user.username, editDetailUserRequestDTO);
-      const successResponse = new CommonResponseDto(200, 'Proses berhasil', responseData, null);
-      return response.status(successResponse.statusCode).json(successResponse);
-    } catch (error) {
-      throw response.status(error.status).json(error.response);
-      // throw response.json(error);
-    }
+    const responseData = await this.usersService.editDetailUserInfo(request.user.username, editDetailUserRequestDTO);
+    const successResponse = new CommonResponseDto(200, 'Proses berhasil', responseData, null);
+    return response.status(successResponse.statusCode).json(successResponse);
+
   }
 
   @UseGuards(JwtGuard)
   @Get('all-users')
   async getAllUsers(@Request() request: any, @Res() response: Response, @Query('search') searchTerm?: string,) {
-    try {
-      const responseData = await this.usersService.getAllUsers(searchTerm);
-      const successResponse = new CommonResponseDto(200, 'Proses berhasil', responseData, null);
-      return response.status(successResponse.statusCode).json(successResponse);
-    } catch (error) {
-      response.status(error.status).json(error.response);
-    }
+    const responseData = await this.usersService.getAllUsers(searchTerm);
+    const successResponse = new CommonResponseDto(200, 'Proses berhasil', responseData, null);
+    return response.status(successResponse.statusCode).json(successResponse);
+
   }
 
   @UseGuards(JwtGuard)
   @Get('hello-service')
   async getHello(@Request() request: any, @Res() response: Response) {
-    try {
-      console.log(request.user)
-      const responseData = await this.usersService.getHello();
-      const successResponse = new CommonResponseDto(200, 'Proses berhasil', responseData, null);
-      return response.status(successResponse.statusCode).json(successResponse);
-    } catch (error) {
-      response.status(error.status).json(error.response);
-    }
+    const responseData = await this.usersService.getHello();
+    const successResponse = new CommonResponseDto(200, 'Proses berhasil', responseData, null);
+    return response.status(successResponse.statusCode).json(successResponse);
+
   }
 }

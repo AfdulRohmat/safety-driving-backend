@@ -32,6 +32,7 @@ export class GroupsService {
 
         const group = new Group();
         group.name = createGroupRequestDTO.nama_group;
+        group.description = createGroupRequestDTO.description;
         group.createdBy = user
         const groupData = await this.groupRepository.save(group)
 
@@ -75,16 +76,16 @@ export class GroupsService {
 
         // Adding Role
         switch (addingUserToGroupMemberRequestDTO.role) {
-            case 'DRIVER':
+            case 'Driver':
                 groupMember.role = [GroupRole.DRIVER]
                 break;
-            case 'COMPANY':
+            case 'Company':
                 groupMember.role = [GroupRole.COMPANY]
                 break;
-            case 'FAMILY':
+            case 'Family':
                 groupMember.role = [GroupRole.FAMILY]
                 break;
-            case 'MEDIC':
+            case 'Paramedic':
                 groupMember.role = [GroupRole.MEDIC]
                 break;
             default:

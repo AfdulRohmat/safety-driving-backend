@@ -1,7 +1,7 @@
 import { User } from "src/users/entities/user.entity";
 import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { GroupMember } from "./group-member.entity";
-import { Vehicle } from "src/vehicle/entities/vehicle.entity";
+import { Trip } from "src/trips/entities/trip.entity";
 
 @Entity({ name: "groups" })
 export class Group {
@@ -11,14 +11,18 @@ export class Group {
     @Column()
     name: string;
 
+    @Column()
+    description: string;
+
     @ManyToOne(() => User)
     createdBy: User;
 
     @OneToMany(() => GroupMember, groupMember => groupMember.group)
     members: GroupMember[];
 
-    @OneToMany(() => Vehicle, vehicle => vehicle.group)
-    vehicles: Vehicle[];
+
+    @OneToMany(() => Trip, trip => trip.group)
+    trips: Trip[];
 
     @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     createdAt: Date;
