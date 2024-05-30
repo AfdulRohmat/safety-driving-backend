@@ -30,7 +30,7 @@ import { TripsModule } from './trips/trips.module';
     EmailModule,
     GroupsModule,
     SensorPotensioModule,
-    TripsModule
+    TripsModule,
   ],
   controllers: [AppController],
   providers: [AppService, IsUniqueConstraint],

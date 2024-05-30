@@ -29,16 +29,15 @@ export class SensorPotensioController {
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
 
-    const dataStream$: Observable<SensorPotensio[]> = interval(1000).pipe(
+    const dataStream$: Observable<SensorPotensio[]> = interval(5000).pipe(
       switchMap(() => this.sensorPotensioService.findAll())
     );
 
     const subscription = dataStream$.subscribe({
       next: async (data: SensorPotensio[]) => {
-        for (const item of data) {
-          res.write(`data: ${JSON.stringify(item)}\n\n`);
-          await new Promise(resolve => setTimeout(resolve, 5000)); // Optional delay to control the stream rate
-        }
+        res.write(`data: ${JSON.stringify(data)}\n\n`);
+        await new Promise(resolve => setTimeout(resolve, 5000)); // Optional delay to control the stream rate
+
       },
       error: (error) => {
         console.error('Error streaming data:', error);
@@ -52,9 +51,6 @@ export class SensorPotensioController {
       subscription.unsubscribe();
     });
   }
-
-
-
 
   @Get(':id')
   findOne(@Param('id') id: string) {

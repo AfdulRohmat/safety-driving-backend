@@ -1,6 +1,7 @@
 import { Group } from "src/groups/entities/group.entity";
 import { User } from "src/users/entities/user.entity";
-import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { TripMonitoring } from "./trip_monitoring";
 
 export enum ProsesPerjalananEnum {
     BELUM_DIMULAI = 'Belum Dimulai',
@@ -8,11 +9,10 @@ export enum ProsesPerjalananEnum {
     SELESAI = "Selesai"
 }
 
-
 @Entity({ name: "trips" })
 export class Trip {
     @PrimaryGeneratedColumn({ name: "trip_id" })
-    tripId: number;
+    id: number;
 
     @Column({ name: 'alamat_awal' })
     alamatAwal: string;
