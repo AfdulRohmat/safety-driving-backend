@@ -30,4 +30,5 @@ export class AddTripRequestDTO {
 
     @IsNotEmpty()
     driverId: number
+
 }

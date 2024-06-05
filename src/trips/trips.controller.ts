@@ -33,6 +33,15 @@ export class TripsController {
     return response.status(successResponse.statusCode).json(successResponse);
   }
 
+  @UseGuards(JwtGuard)
+  @Post("/detail")
+  @UseInterceptors(NoFilesInterceptor())
+  async getTripByToken(@Query('tripToken') tripToken: string, @Res() response: Response) {
+    const responseData: Trip = await this.tripsService.getTripByToken(tripToken)
+    const successResponse = new CommonResponseDto(200, 'Proses berhasil', responseData, null);
+    return response.status(successResponse.statusCode).json(successResponse);
+  }
+
   // addTripMonitoring
   @UseGuards(JwtGuard)
   @Get("/add-trip-monitoring")
@@ -42,7 +51,7 @@ export class TripsController {
     @Query('lng') lng: string,
     @Query('kecepatan') kecepatan: string,
     @Query('levelKantuk') levelKantuk: string,
-    @Query('tripId') tripId: number,
+    @Query('tripToken') tripToken: string,
     @Res() response: Response) {
 
     const addTripMonitoringRequestDTO = new AddTripMonitoringRequestDTO()
@@ -50,7 +59,7 @@ export class TripsController {
     addTripMonitoringRequestDTO.longitude = lng
     addTripMonitoringRequestDTO.kecepatan = kecepatan
     addTripMonitoringRequestDTO.levelKantuk = levelKantuk
-    addTripMonitoringRequestDTO.tripId = tripId
+    addTripMonitoringRequestDTO.tripToken = tripToken
 
     const responseData: TripMonitoring | void = await this.tripsService.addTripMonitoring(addTripMonitoringRequestDTO)
     const successResponse = new CommonResponseDto(200, 'Proses berhasil', responseData, null);
@@ -60,21 +69,20 @@ export class TripsController {
   // Get Monitoring by tripId
   @Get('monitoring-trip')
   async streamData(
-    @Query('tripId') tripId: number,
+    @Query('tripToken') tripToken: string,
     @Res() res: Response): Promise<void> {
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
 
     const dataStream$: Observable<TripMonitoring[]> = interval(5000).pipe(
-      switchMap(() => this.tripsService.getTripMonitoring(tripId))
+      switchMap(() => this.tripsService.getTripMonitoring(tripToken))
     );
 
     const subscription = dataStream$.subscribe({
       next: async (data: TripMonitoring[]) => {
         res.write(`data: ${JSON.stringify(data)}\n\n`);
         await new Promise(resolve => setTimeout(resolve, 5000)); // Optional delay to control the stream rate
-
       },
       error: (error) => {
         console.error('Error streaming data:', error);

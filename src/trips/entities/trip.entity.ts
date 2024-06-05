@@ -41,6 +41,9 @@ export class Trip {
     @Column()
     status: string;
 
+    @Column({ name: 'trip_token' })
+    tripToken: string;
+
     @ManyToOne(() => Group, group => group.trips)
     group: Group;
 

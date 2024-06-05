@@ -18,8 +18,8 @@ export class TripMonitoring {
     @Column({ name: 'level_kantuk' })
     levelKantuk: string;
 
-    @ManyToOne(() => Trip, { nullable: true, })
-    trip: Trip;
+    @Column({ name: 'trip_token' })
+    tripToken: string;
 
     @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     createdAt: Date;

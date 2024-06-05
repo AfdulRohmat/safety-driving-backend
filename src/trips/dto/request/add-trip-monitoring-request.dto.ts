@@ -14,5 +14,5 @@ export class AddTripMonitoringRequestDTO {
     levelKantuk: string;
 
     @IsNotEmpty()
-    tripId: number
+    tripToken: string
 }

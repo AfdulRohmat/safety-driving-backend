@@ -58,6 +58,10 @@ export class TripsService {
     trip.driver = userDriver
     trip.group = group
 
+    // generate 6 digit random number then convert to string
+    const generatedToken: number = Math.floor(100000 + Math.random() * 900000)
+    trip.tripToken = generatedToken.toString()
+
     return await this.tripRepository.save(trip)
   }
 
@@ -72,11 +76,25 @@ export class TripsService {
     return data
   }
 
-  // Add Trip Monitoring
-  async addTripMonitoring(addTripMonitoringRequestDTO: AddTripMonitoringRequestDTO): Promise<TripMonitoring | void> {
+  // Get By Trip Token
+  async getTripByToken(tripToken: string): Promise<Trip> {
     const dataTrip = await this.tripRepository.findOne({
       where: {
-        id: addTripMonitoringRequestDTO.tripId
+        tripToken: tripToken
+      }
+    })
+    if (!dataTrip) throw new BadRequestException('Proses gagal', { cause: new Error(), description: 'Data trip tidak valid' })
+
+    return dataTrip;
+
+  }
+
+  // Add Trip Monitoring
+  async addTripMonitoring(addTripMonitoringRequestDTO: AddTripMonitoringRequestDTO): Promise<TripMonitoring | void> {
+
+    const dataTrip = await this.tripRepository.findOne({
+      where: {
+        tripToken: addTripMonitoringRequestDTO.tripToken
       }
     })
     if (!dataTrip) throw new BadRequestException('Proses gagal', { cause: new Error(), description: 'Data trip tidak valid' })
@@ -86,17 +104,23 @@ export class TripsService {
     tripMonitoring.longitude = addTripMonitoringRequestDTO.longitude
     tripMonitoring.kecepatan = addTripMonitoringRequestDTO.kecepatan
     tripMonitoring.levelKantuk = addTripMonitoringRequestDTO.levelKantuk
-    tripMonitoring.trip = dataTrip
+    tripMonitoring.tripToken = addTripMonitoringRequestDTO.tripToken
 
     return await this.tripMonitoringRepository.save(tripMonitoring);
   }
 
   // Get TripMonitoring
-  async getTripMonitoring(tripId: number): Promise<TripMonitoring[]> {
+  async getTripMonitoring(tripToken: string): Promise<TripMonitoring[]> {
+    const dataTrip = await this.tripRepository.findOne({
+      where: {
+        tripToken
+      }
+    })
+    if (!dataTrip) throw new BadRequestException('Proses gagal', { cause: new Error(), description: 'Data trip tidak valid' })
+
     const data = await this.tripMonitoringRepository
       .createQueryBuilder('trm')
-      .leftJoinAndSelect('trm.trip', 'tr', 'trm.tripId = tr.id')
-      .where('trm.tripId = :tripId', { tripId })
+      .where('trm.tripToken = :tripToken', { tripToken })
       .getMany();
 
     return data
