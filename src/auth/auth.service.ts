@@ -10,6 +10,8 @@ import { EmailService } from 'src/email/email.service';
 import { ActivateAccountRequestDTO } from './dto/request/activate-account-request.dto';
 import { ActivateAccountResponseDTO } from './dto/response/activate-account-response.dto';
 import { JwtService } from '@nestjs/jwt';
+import { ResendTokenRequestDTO } from './dto/request/resend-token-request.dto';
+import { ResendTokenResponseDTO } from './dto/response/resend-token-response.dto';
 
 
 @Injectable()
@@ -95,6 +97,7 @@ export class AuthService {
   }
 
   async validateUser(username: string, password: string) {
+
     const user = await this.userRepository.findOneOrFail({
       where: {
         email: username
@@ -114,6 +117,36 @@ export class AuthService {
     }
 
     return null;
+  }
+
+  async resendActivationCode(resenTokenRequestDTO: ResendTokenRequestDTO): Promise<ResendTokenResponseDTO> {
+    const user = await this.userRepository.findOne({
+      where: {
+        email: resenTokenRequestDTO.email
+      }
+    })
+
+    if (!user) {
+      throw new BadRequestException('Proses gagal', { cause: new Error(), description: 'Akun belum terdaftar. Silahkan register' })
+    }
+
+    if (user.isVerified == true) {
+      throw new BadRequestException('Proses gagal', { cause: new Error(), description: 'Akun sudah terverifikasi. Silahkan login' })
+    }
+
+
+
+    // generate random activation code
+    const activationCode: number = Math.floor(100000 + Math.random() * 900000)
+
+    // re assigned actionCode
+    user.activationCode = activationCode
+    this.userRepository.save(user);
+
+    // send to email
+    this.emailService.sendUserConfirmation(user)
+
+    return new ResendTokenResponseDTO(user.email, "Activation Code berhasil dikirim ulang, Mohon check email anda")
   }
 
 

@@ -9,6 +9,8 @@ import { RegisterResponseDTO } from './dto/response/register-response.dto';
 import { ActivateAccountRequestDTO } from './dto/request/activate-account-request.dto';
 import { ActivateAccountResponseDTO } from './dto/response/activate-account-response.dto';
 import { LocalAuthGuard } from './guards/local-auth.guard';
+import { ResendTokenRequestDTO } from './dto/request/resend-token-request.dto';
+import { ResendTokenResponseDTO } from './dto/response/resend-token-response.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -31,7 +33,15 @@ export class AuthController {
     const responseData: ActivateAccountResponseDTO = await this.authService.activateAccount(request);
     const successResponse = new CommonResponseDto(200, 'Proses aktivasi berhasil. Silahkan login', responseData, null);
     return response.status(successResponse.statusCode).json(successResponse);
+  }
 
+  // resendActivationCode
+  @Post('resend-activation-code')
+  @UseInterceptors(NoFilesInterceptor())
+  async resendActivationCode(@Body() request: ResendTokenRequestDTO, @Res() response: Response): Promise<ResendTokenResponseDTO | any> {
+    const responseData: ResendTokenResponseDTO = await this.authService.resendActivationCode(request);
+    const successResponse = new CommonResponseDto(200, 'Activation Code berhasil dikirim ulang. Silahkan cek email anda', responseData, null);
+    return response.status(successResponse.statusCode).json(successResponse);
   }
 
   @UseGuards(LocalAuthGuard)
