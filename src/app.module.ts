@@ -21,7 +21,9 @@ import { TripsModule } from './trips/trips.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({}),
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     ScheduleModule.forRoot(),
     TypeOrmModule.forFeature([User, Role, DetailUser, Group, GroupMember]),
     DatabaseModule,
