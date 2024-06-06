@@ -7,6 +7,7 @@ export enum GroupRole {
     COMPANY = 'ROLE_COMPANY',
     FAMILY = 'ROLE_FAMILY',
     MEDIC = 'ROLE_MEDIC',
+    KNKT = 'ROLE_KNKT',
     USER_GROUP = 'ROLE_USER_GROUP',
     ADMIN_GROUP = 'ROLE_ADMIN_GROUP'
 }

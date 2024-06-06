@@ -5,8 +5,6 @@ import { DetailUser } from "./detail-user.entity";
 import { GroupMember } from "src/groups/entities/group-member.entity";
 import { Group } from "src/groups/entities/group.entity";
 
-
-
 @Entity('users')
 export class User {
     @PrimaryGeneratedColumn()
