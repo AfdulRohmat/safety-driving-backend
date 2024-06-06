@@ -1,0 +1,21 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      ['build', '-t', 'gcr.io/ta-safety-driving/safety-driving-backend', '.']
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/ta-safety-driving/safety-driving-backend']
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args:
+      [
+        'run',
+        'deploy',
+        'safety-driving-backend',
+        '--image',
+        'gcr.io/ta-safety-driving/safety-driving-backend',
+        '--platform',
+        'managed',
+        '--region',
+        'asia-southeast2',
+        '--set-env-vars',
+        'DATABASE_HOST=34.101.213.241,DATABASE_PORT=5432,DATABASE_USER=postgres,DATABASE_PASSWORD=passwordta-safety-driving-2024@,DATABASE_NAME=safety-driving-db',
+      ]
