@@ -14,6 +14,9 @@ export class Trip {
     @PrimaryGeneratedColumn({ name: "trip_id" })
     id: number;
 
+    @Column({ name: 'jadwal_perjalanan' })
+    jadwalPerjalanan: Date;
+
     @Column({ name: 'alamat_awal' })
     alamatAwal: string;
 
@@ -39,7 +42,7 @@ export class Trip {
     noPolisi: string;
 
     @Column()
-    status: string;
+    status: ProsesPerjalananEnum;
 
     @Column({ name: 'trip_token' })
     tripToken: string;

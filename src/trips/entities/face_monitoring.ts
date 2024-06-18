@@ -1,27 +1,18 @@
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { Trip } from "./trip.entity";
 
-
-
-@Entity({ name: "trip_monitoring" })
-export class TripMonitoring {
-    @PrimaryGeneratedColumn({ name: "trip_monitoring_id" })
+@Entity({ name: "face_monitoring" })
+export class FaceMonitoring {
+    @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({ name: 'heart_rate' })
-    heartRate: string;
-
-    @Column({ name: 'posisi_pedal_gas' })
-    posisiPedalGas: string;
+    @Column()
+    perclos: string;
 
     @Column()
-    rpm: string;
+    pebr: string;
 
-    @Column()
-    latitude: string;
-
-    @Column()
-    longitude: string;
+    @Column({ name: 'n-yawn' })
+    nYawn: string;
 
     @Column({ name: 'kondisi_kantuk' })
     kondisiKantuk: string;

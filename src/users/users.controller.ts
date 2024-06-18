@@ -7,6 +7,8 @@ import { JwtGuard } from 'src/auth/guards/jwt-auth.guard';
 import { NoFilesInterceptor } from '@nestjs/platform-express';
 import { AddDetailUserRequestDTO } from './dto/request/add-detail-user-request.dto';
 import { EditDetailUserRequestDTO } from './dto/request/edit-detail-user-request.dto';
+import { GetDetailUserRequestDTO } from './dto/request/get-detail-user-request.dto';
+import { User } from './entities/user.entity';
 
 @Controller('users')
 export class UsersController {
@@ -24,18 +26,17 @@ export class UsersController {
   @UseGuards(JwtGuard)
   @Post('detail-user')
   @UseInterceptors(NoFilesInterceptor())
-  async addDetailUserInfo(@Request() request: any, @Body() addDetailUserRequestDTO: AddDetailUserRequestDTO, @Res() response: Response) {
-    const responseData = await this.usersService.addDetailUserInfo(request.user.username, addDetailUserRequestDTO);
+  async addDetailUserInfo(@Body() addDetailUserRequestDTO: AddDetailUserRequestDTO, @Res() response: Response) {
+    const responseData = await this.usersService.addOrUpdateDetailUserInfo(addDetailUserRequestDTO);
     const successResponse = new CommonResponseDto(200, 'Proses berhasil', responseData, null);
     return response.status(successResponse.statusCode).json(successResponse);
 
   }
 
-  @UseGuards(JwtGuard)
-  @Put('detail-user')
+  @Post('get-detail-user')
   @UseInterceptors(NoFilesInterceptor())
-  async editDetailUserInfo(@Request() request: any, @Body() editDetailUserRequestDTO: EditDetailUserRequestDTO, @Res() response: Response) {
-    const responseData = await this.usersService.editDetailUserInfo(request.user.username, editDetailUserRequestDTO);
+  async getDetailUser(@Body() getDetailUserRequestDTO: GetDetailUserRequestDTO, @Res() response: Response) {
+    const responseData = await this.usersService.getDetailUser(getDetailUserRequestDTO);
     const successResponse = new CommonResponseDto(200, 'Proses berhasil', responseData, null);
     return response.status(successResponse.statusCode).json(successResponse);
 

@@ -7,6 +7,7 @@ import { User } from 'src/users/entities/user.entity';
 import { GroupMember, GroupRole } from './entities/group-member.entity';
 import { AddingUserToGroupMemberRequestDTO } from './dto/request/adding-user-to-group-member-request.dto';
 import { GetDetailGroupRequestDTO } from './dto/request/get-detail-group.dto';
+import { RemoveUserFromGroupMemberRequestDTO } from './dto/request/remove-user-from-group-member-request.dto';
 
 
 @Injectable()
@@ -76,23 +77,62 @@ export class GroupsService {
 
         // Adding Role
         switch (addingUserToGroupMemberRequestDTO.role) {
-            case 'Driver':
+            case 'ROLE_DRIVER':
                 groupMember.role = [GroupRole.DRIVER]
                 break;
-            case 'Company':
+            case 'ROLE_COMPANY':
                 groupMember.role = [GroupRole.COMPANY]
                 break;
-            case 'Family':
+            case 'ROLE_FAMILY':
                 groupMember.role = [GroupRole.FAMILY]
                 break;
-            case 'Paramedic':
+            case 'ROLE_MEDIC':
                 groupMember.role = [GroupRole.MEDIC]
+                break;
+            case 'ROLE_KNKT':
+                groupMember.role = [GroupRole.KNKT]
+                break;
+            case 'ROLE_ADMIN_GROUP':
+                groupMember.role = [GroupRole.ADMIN_GROUP]
                 break;
             default:
                 break;
         }
 
         return await this.groupMemberRepository.save(groupMember);
+    }
+
+    async removeUserFromGroupMember(removeUserFromGroupMemberRequestDTO: RemoveUserFromGroupMemberRequestDTO): Promise<string | any> {
+        const user = await this.userRepository.findOne({
+            where: {
+                id: removeUserFromGroupMemberRequestDTO.user_id
+            }
+        })
+        if (!user) throw new BadRequestException('Proses gagal', { cause: new Error(), description: 'Akun tidak valid' })
+
+        const group = await this.groupRepository.findOne({
+            where: {
+                id: removeUserFromGroupMemberRequestDTO.group_id
+            }
+        })
+        if (!group) throw new BadRequestException('Proses gagal', { cause: new Error(), description: 'Group tidak valid' })
+
+        const userInGroup = await this.groupMemberRepository.findOne({
+            where: {
+                user: {
+                    id: user.id
+                },
+                group: {
+                    id: group.id
+                }
+            }
+        })
+
+        if (!userInGroup) throw new BadRequestException('Proses gagal', { cause: new Error(), description: 'User tidak terdaftar dalam grup yang dipilih' })
+
+        this.groupMemberRepository.delete(userInGroup.id);
+
+        return "User successfully removed from group";
     }
 
     async getGroupsByUserLogin(email: string): Promise<GroupMember[]> {
@@ -125,5 +165,7 @@ export class GroupsService {
 
         return group;
     }
+
+
 
 }

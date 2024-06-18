@@ -2,6 +2,9 @@ import { IsNotEmpty } from "class-validator";
 
 export class AddTripRequestDTO {
     @IsNotEmpty()
+    jadwalPerjalanan: Date;
+
+    @IsNotEmpty()
     alamatAwal: string;
 
     @IsNotEmpty()

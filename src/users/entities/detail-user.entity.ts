@@ -17,6 +17,9 @@ export class DetailUser {
     @Column({ name: 'nama_belakang' })
     namaBelakang: string;
 
+    @Column({ name: 'no_telepon' })
+    noTelepon: string;
+
     @Column({ name: 'jenis_kelamin' })
     jenisKelamin: JenisKelaminEnum;
 

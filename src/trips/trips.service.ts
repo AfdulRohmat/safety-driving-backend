@@ -8,7 +8,10 @@ import { Group } from 'src/groups/entities/group.entity';
 import { GetTravelRequestDTO } from './dto/request/get-travel-request.dto';
 import { TripMonitoring } from './entities/trip_monitoring';
 import { AddTripMonitoringRequestDTO } from './dto/request/add-trip-monitoring-request.dto';
-
+import { AddFaceMonitoringRequestDTO } from './dto/request/add-face-monitoring-request.dto';
+import { FaceMonitoring } from './entities/face_monitoring';
+import * as ExcelJS from 'exceljs';
+import { formatDate } from 'src/utils/format-date';
 
 @Injectable()
 export class TripsService {
@@ -18,6 +21,9 @@ export class TripsService {
 
     @InjectRepository(TripMonitoring)
     private readonly tripMonitoringRepository: Repository<TripMonitoring>,
+
+    @InjectRepository(FaceMonitoring)
+    private readonly faceMonitoringRepository: Repository<FaceMonitoring>,
 
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
@@ -42,6 +48,7 @@ export class TripsService {
     if (!group) throw new BadRequestException('Proses gagal', { cause: new Error(), description: 'Group tidak ditemukan / tidak valid' })
 
     const trip = new Trip()
+    trip.jadwalPerjalanan = addTripRequestDTO.jadwalPerjalanan
     trip.alamatAwal = addTripRequestDTO.alamatAwal
     trip.latitudeAwal = addTripRequestDTO.latitudeAwal
     trip.longitudeAwal = addTripRequestDTO.longitudeAwal
@@ -67,11 +74,18 @@ export class TripsService {
 
   // Get All 
   async getAllTrips(getTravelRequestDTO: GetTravelRequestDTO): Promise<Trip[]> {
-    const data = await this.tripRepository
+    const query = this.tripRepository
       .createQueryBuilder('tr')
       .leftJoinAndSelect('tr.driver', 'u', 'tr.driverId = u.id')
       .where('tr.groupId = :groupId', { groupId: getTravelRequestDTO.groupId })
-      .getMany();
+
+    if (getTravelRequestDTO.status) {
+      query.andWhere('tr.status = :status', { status: getTravelRequestDTO.status });
+    }
+
+    query.orderBy('tr.createdAt', 'DESC');
+
+    const data = await query.getMany();
 
     return data
   }
@@ -86,7 +100,21 @@ export class TripsService {
     if (!dataTrip) throw new BadRequestException('Proses gagal', { cause: new Error(), description: 'Data trip tidak valid' })
 
     return dataTrip;
+  }
 
+  // Change Trip Status
+  async changeTripStatus(tripToken: string, status: ProsesPerjalananEnum): Promise<Trip> {
+    const dataTrip = await this.tripRepository.findOne({
+      where: {
+        tripToken: tripToken
+      }
+    })
+    if (!dataTrip) throw new BadRequestException('Proses gagal', { cause: new Error(), description: 'Data trip tidak valid' })
+
+    dataTrip.status = status
+    this.tripRepository.save(dataTrip)
+
+    return dataTrip;
   }
 
   // Add Trip Monitoring
@@ -100,13 +128,35 @@ export class TripsService {
     if (!dataTrip) throw new BadRequestException('Proses gagal', { cause: new Error(), description: 'Data trip tidak valid' })
 
     const tripMonitoring = new TripMonitoring()
+    tripMonitoring.heartRate = addTripMonitoringRequestDTO.heartRate
+    tripMonitoring.posisiPedalGas = addTripMonitoringRequestDTO.posisiPedalGas
     tripMonitoring.latitude = addTripMonitoringRequestDTO.latitude
     tripMonitoring.longitude = addTripMonitoringRequestDTO.longitude
-    tripMonitoring.kecepatan = addTripMonitoringRequestDTO.kecepatan
-    tripMonitoring.levelKantuk = addTripMonitoringRequestDTO.levelKantuk
+    tripMonitoring.rpm = addTripMonitoringRequestDTO.kecepatan
+    tripMonitoring.kondisiKantuk = addTripMonitoringRequestDTO.kondisiKantuk
     tripMonitoring.tripToken = addTripMonitoringRequestDTO.tripToken
 
     return await this.tripMonitoringRepository.save(tripMonitoring);
+  }
+
+  // Add Face Monitoring 
+  async addFaceMonitoring(addFaceMonitoringRequestDTO: AddFaceMonitoringRequestDTO): Promise<FaceMonitoring> {
+    const dataTrip = await this.tripRepository.findOne({
+      where: {
+        tripToken: addFaceMonitoringRequestDTO.tripToken
+      }
+    })
+    if (!dataTrip) throw new BadRequestException('Proses gagal', { cause: new Error(), description: 'Data trip tidak valid' })
+
+    const faceMonitoring = new FaceMonitoring()
+
+    faceMonitoring.perclos = addFaceMonitoringRequestDTO.perclos
+    faceMonitoring.pebr = addFaceMonitoringRequestDTO.pebr
+    faceMonitoring.nYawn = addFaceMonitoringRequestDTO.nYawn
+    faceMonitoring.kondisiKantuk = addFaceMonitoringRequestDTO.kondisiKantuk
+    faceMonitoring.tripToken = addFaceMonitoringRequestDTO.tripToken
+
+    return await this.faceMonitoringRepository.save(faceMonitoring);
   }
 
   // Get TripMonitoring
@@ -125,5 +175,106 @@ export class TripsService {
 
     return data
   }
+
+  // Get Face Monitoring
+  async getFaceMonitoring(tripToken: string): Promise<FaceMonitoring[]> {
+    const dataTrip = await this.tripRepository.findOne({
+      where: {
+        tripToken
+      }
+    })
+    if (!dataTrip) throw new BadRequestException('Proses gagal', { cause: new Error(), description: 'Data trip tidak valid' })
+
+    const data = await this.faceMonitoringRepository
+      .createQueryBuilder('fm')
+      .where('fm.tripToken = :tripToken', { tripToken })
+      .getMany();
+
+    return data
+  }
+
+  // Export / Download Trip Data
+  async exportTripsToExcel(tripToken: string): Promise<Buffer> {
+    const dataTrip = await this.tripRepository.findOne({
+      where: {
+        tripToken
+      }
+    })
+    if (!dataTrip) throw new BadRequestException('Proses gagal', { cause: new Error(), description: 'Data trip tidak valid' })
+
+    const jadwalPerjalananFormattedDate = formatDate(dataTrip.jadwalPerjalanan);
+
+    // QUERY TRIP MONITORING
+    const queryTripMonitoring = this.tripMonitoringRepository
+      .createQueryBuilder('trm')
+      .where('trm.tripToken = :tripToken', { tripToken })
+    queryTripMonitoring.orderBy('trm.createdAt', 'DESC');
+    const tripsMonitoring = await queryTripMonitoring.getMany();
+
+    // QUERY FACE MONITORING
+    const queryFacepMonitoring = this.faceMonitoringRepository
+      .createQueryBuilder('fm')
+      .where('fm.tripToken = :tripToken', { tripToken })
+    queryFacepMonitoring.orderBy('fm.createdAt', 'DESC');
+    const facesMonitoring = await queryFacepMonitoring.getMany();
+
+    // DEFINE WORKBOOK
+    const workbook = new ExcelJS.Workbook();
+
+    const worksheetTripsMonitoring = workbook.addWorksheet(`Data Perjalanan Tanggal ${jadwalPerjalananFormattedDate}`);
+    const worksheetFacesMonitoring = workbook.addWorksheet(`Data Deteksi Muka Tanggal ${jadwalPerjalananFormattedDate}`);
+
+    // Define columns
+    worksheetTripsMonitoring.columns = [
+      { header: 'No', key: 'no', width: 10 },
+      { header: 'Heart Rate', key: 'heartRate', width: 20 },
+      { header: 'Posisi Pedal Gas', key: 'posisiPedalGas', width: 10 },
+      { header: 'Rpm', key: 'rpm', width: 20 },
+      { header: 'Latitude', key: 'latitude', width: 20 },
+      { header: 'Longitude', key: 'longitude', width: 20 },
+      { header: 'Kondisi Kantuk', key: 'kondisiKantuk', width: 20 },
+      { header: 'Diambil Pada', key: 'createdAt', width: 20 },
+    ];
+
+    worksheetFacesMonitoring.columns = [
+      { header: 'No', key: 'no', width: 10 },
+      { header: 'PERCLOS', key: 'perclos', width: 20 },
+      { header: 'PEBR', key: 'pebr', width: 10 },
+      { header: 'N-Yawn', key: 'nYawn', width: 20 },
+      { header: 'Kondisi Kantuk', key: 'kondisiKantuk', width: 20 },
+      { header: 'Diambil Pada', key: 'createdAt', width: 20 },
+    ];
+
+    // Add rows
+    tripsMonitoring.forEach((trip, index) => {
+      worksheetTripsMonitoring.addRow({
+        no: index + 1,
+        id: trip.id,
+        heartRate: parseFloat(trip.heartRate),
+        posisiPedalGas: trip.posisiPedalGas,
+        rpm: parseFloat(trip.rpm),
+        latitude: parseFloat(trip.latitude),
+        longitude: parseFloat(trip.longitude),
+        kondisiKantuk: trip.kondisiKantuk,
+        createdAt: trip.createdAt.toISOString()
+      });
+    });
+
+    facesMonitoring.forEach((face, index) => {
+      worksheetFacesMonitoring.addRow({
+        no: index + 1,
+        id: face.id,
+        perclos: parseFloat(face.perclos),
+        pebr: parseFloat(face.pebr),
+        nYawn: parseFloat(face.nYawn),
+        kondisiKantuk: face.kondisiKantuk,
+        createdAt: face.createdAt.toISOString()
+      });
+    });
+
+    const buffer = await workbook.xlsx.writeBuffer()
+    return Buffer.from(buffer);
+  }
+
 
 }

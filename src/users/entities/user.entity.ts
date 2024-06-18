@@ -33,7 +33,7 @@ export class User {
     @JoinTable()
     roles: Role[];
 
-    @OneToOne(() => DetailUser, (detailUser) => detailUser.user, { cascade: true })
+    @OneToOne(() => DetailUser, (detailUser) => detailUser.user)
     @JoinColumn({ name: 'detail_user_id' })
     detailUser: DetailUser;
 

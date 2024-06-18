@@ -10,6 +10,7 @@ import { CommonResponseDto } from 'src/utils/common-response.dto';
 import { GroupMember } from './entities/group-member.entity';
 import { GetDetailGroupRequestDTO } from './dto/request/get-detail-group.dto';
 import { AddingUserToGroupMemberRequestDTO } from './dto/request/adding-user-to-group-member-request.dto';
+import { RemoveUserFromGroupMemberRequestDTO } from './dto/request/remove-user-from-group-member-request.dto';
 
 @Controller('groups')
 export class GroupsController {
@@ -40,6 +41,15 @@ export class GroupsController {
   @UseInterceptors(NoFilesInterceptor())
   async addUserToGroupMemberByUsername(@Body() addingUserToGroupMemberRequestDTO: AddingUserToGroupMemberRequestDTO, @Res() response: Response) {
     const responseData: GroupMember = await this.groupsService.addUserToGroupMemberByUsername(addingUserToGroupMemberRequestDTO)
+    const successResponse = new CommonResponseDto(200, 'Proses berhasil', responseData, null);
+    return response.status(successResponse.statusCode).json(successResponse);
+  }
+
+  @UseGuards(JwtGuard)
+  @Post("/remove-user")
+  @UseInterceptors(NoFilesInterceptor())
+  async removeUserFromGroupMember(@Body() RemoveUserFromGroupMemberRequestDTO: RemoveUserFromGroupMemberRequestDTO, @Res() response: Response) {
+    const responseData: any = await this.groupsService.removeUserFromGroupMember(RemoveUserFromGroupMemberRequestDTO)
     const successResponse = new CommonResponseDto(200, 'Proses berhasil', responseData, null);
     return response.status(successResponse.statusCode).json(successResponse);
   }
