@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import { useContainer } from 'class-validator';
+import { WsAdapter } from '@nestjs/platform-ws';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -9,6 +10,8 @@ async function bootstrap() {
     cors: true,
     bodyParser: true,
   });
+
+
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
@@ -22,6 +25,8 @@ async function bootstrap() {
       stopAtFirstError: true,
     }),
   );
+
+  app.useWebSocketAdapter(new WsAdapter(app));
 
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
 

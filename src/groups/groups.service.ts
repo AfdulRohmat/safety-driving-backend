@@ -40,7 +40,7 @@ export class GroupsService {
         const groupMember = new GroupMember();
         groupMember.group = group;
         groupMember.user = user;
-        groupMember.role = [GroupRole.ADMIN_GROUP]
+        groupMember.role = GroupRole.ADMIN_GROUP
         await this.groupMemberRepository.save(groupMember)
 
         return groupData;
@@ -78,24 +78,25 @@ export class GroupsService {
         // Adding Role
         switch (addingUserToGroupMemberRequestDTO.role) {
             case 'ROLE_DRIVER':
-                groupMember.role = [GroupRole.DRIVER]
+                groupMember.role = GroupRole.DRIVER
                 break;
             case 'ROLE_COMPANY':
-                groupMember.role = [GroupRole.COMPANY]
+                groupMember.role = GroupRole.COMPANY
                 break;
             case 'ROLE_FAMILY':
-                groupMember.role = [GroupRole.FAMILY]
+                groupMember.role = GroupRole.FAMILY
                 break;
             case 'ROLE_MEDIC':
-                groupMember.role = [GroupRole.MEDIC]
+                groupMember.role = GroupRole.MEDIC
                 break;
             case 'ROLE_KNKT':
-                groupMember.role = [GroupRole.KNKT]
+                groupMember.role = GroupRole.KNKT
                 break;
             case 'ROLE_ADMIN_GROUP':
-                groupMember.role = [GroupRole.ADMIN_GROUP]
+                groupMember.role = GroupRole.ADMIN_GROUP
                 break;
             default:
+                groupMember.role = GroupRole.USER_GROUP
                 break;
         }
 

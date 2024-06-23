@@ -21,8 +21,8 @@ export class GroupMember {
     @JoinColumn({ name: 'userId' })
     user: User;
 
-    @Column({ type: 'enum', enum: GroupRole, default: [GroupRole.USER_GROUP], array: true })
-    role: GroupRole[];
+    @Column({ type: 'enum', enum: GroupRole })
+    role: GroupRole;
 
     @ManyToOne(() => Group, group => group.members)
     @JoinColumn({ name: 'groupId' })

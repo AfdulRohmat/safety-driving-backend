@@ -6,8 +6,9 @@ import { Trip } from './entities/trip.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Group } from 'src/groups/entities/group.entity';
 import { TripMonitoring } from './entities/trip_monitoring';
-import { TripGateway } from './gateway/trip.gateway';
 import { FaceMonitoring } from './entities/face_monitoring';
+import { TripMonitoringGateway } from './gateway/trip_monitoring.gateway';
+// import { FaceMonitoringGateway } from './gateway/face_monitoring.gateway';
 
 @Module({
   imports: [
@@ -16,10 +17,10 @@ import { FaceMonitoring } from './entities/face_monitoring';
       User,
       Group,
       TripMonitoring,
-      FaceMonitoring
+      FaceMonitoring,
     ])
   ],
   controllers: [TripsController],
-  providers: [TripsService, TripGateway],
+  providers: [TripsService, TripMonitoringGateway],
 })
 export class TripsModule { }

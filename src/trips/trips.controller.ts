@@ -59,18 +59,20 @@ export class TripsController {
   @Get("/add-trip-monitoring")
   @UseInterceptors(NoFilesInterceptor())
   async addTripMonitoring(
-    @Query('lat') lat: string,
-    @Query('lng') lng: string,
+    @Query('latitude') latitude: string,
+    @Query('longitude') longitude: string,
     @Query('kecepatan') kecepatan: string,
     @Query('kondisiKantuk') kondisiKantuk: string,
+    @Query('posisiPedalGas') posisiPedalGas: string,
     @Query('tripToken') tripToken: string,
     @Res() response: Response) {
 
     const addTripMonitoringRequestDTO = new AddTripMonitoringRequestDTO()
-    addTripMonitoringRequestDTO.latitude = lat
-    addTripMonitoringRequestDTO.longitude = lng
+    addTripMonitoringRequestDTO.latitude = latitude
+    addTripMonitoringRequestDTO.longitude = longitude
     addTripMonitoringRequestDTO.kecepatan = kecepatan
     addTripMonitoringRequestDTO.kondisiKantuk = kondisiKantuk
+    addTripMonitoringRequestDTO.posisiPedalGas = posisiPedalGas
     addTripMonitoringRequestDTO.tripToken = tripToken
 
     const responseData: TripMonitoring | void = await this.tripsService.addTripMonitoring(addTripMonitoringRequestDTO)
@@ -111,14 +113,14 @@ export class TripsController {
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
 
-    const dataStream$: Observable<TripMonitoring[]> = interval(5000).pipe(
+    const dataStream$: Observable<TripMonitoring[]> = interval(10000).pipe(
       switchMap(() => this.tripsService.getTripMonitoring(tripToken))
     );
 
     const subscription = dataStream$.subscribe({
       next: async (data: TripMonitoring[]) => {
         res.write(`data: ${JSON.stringify(data)}\n\n`);
-        await new Promise(resolve => setTimeout(resolve, 5000)); // Optional delay to control the stream rate
+        await new Promise(resolve => setTimeout(resolve, 10000)); // Optional delay to control the stream rate
       },
       error: (error) => {
         console.error('Error streaming data:', error);
@@ -141,14 +143,14 @@ export class TripsController {
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
 
-    const dataStream$: Observable<FaceMonitoring[]> = interval(5000).pipe(
+    const dataStream$: Observable<FaceMonitoring[]> = interval(10000).pipe(
       switchMap(() => this.tripsService.getFaceMonitoring(tripToken))
     );
 
     const subscription = dataStream$.subscribe({
       next: async (data: FaceMonitoring[]) => {
         res.write(`data: ${JSON.stringify(data)}\n\n`);
-        await new Promise(resolve => setTimeout(resolve, 5000)); // Optional delay to control the stream rate
+        await new Promise(resolve => setTimeout(resolve, 10000)); // Optional delay to control the stream rate
       },
       error: (error) => {
         console.error('Error streaming data:', error);

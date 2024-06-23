@@ -19,6 +19,8 @@ export class AddTripMonitoringRequestDTO {
     @IsNotEmpty()
     kondisiKantuk: string;
 
+
+
     @IsNotEmpty()
     tripToken: string
 }

@@ -1,8 +1,6 @@
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Trip } from "./trip.entity";
 
-
-
 @Entity({ name: "trip_monitoring" })
 export class TripMonitoring {
     @PrimaryGeneratedColumn({ name: "trip_monitoring_id" })
