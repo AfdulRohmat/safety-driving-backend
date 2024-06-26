@@ -129,11 +129,16 @@ export class TripsService {
 
     const tripMonitoring = new TripMonitoring()
     tripMonitoring.heartRate = addTripMonitoringRequestDTO.heartRate
-    tripMonitoring.posisiPedalGas = addTripMonitoringRequestDTO.posisiPedalGas
     tripMonitoring.latitude = addTripMonitoringRequestDTO.latitude
     tripMonitoring.longitude = addTripMonitoringRequestDTO.longitude
-    tripMonitoring.rpm = addTripMonitoringRequestDTO.kecepatan
-    tripMonitoring.kondisiKantuk = addTripMonitoringRequestDTO.kondisiKantuk
+    tripMonitoring.kecepatan = addTripMonitoringRequestDTO.kecepatan
+    tripMonitoring.rpm = addTripMonitoringRequestDTO.rpm
+    tripMonitoring.thurttle = addTripMonitoringRequestDTO.thurttle
+    tripMonitoring.thurttle = addTripMonitoringRequestDTO.thurttle
+    tripMonitoring.sudutPostural = addTripMonitoringRequestDTO.sudutPostural
+    tripMonitoring.kecepatanPostural = addTripMonitoringRequestDTO.kecepatanPostural
+    tripMonitoring.durasiPostural = addTripMonitoringRequestDTO.durasiPostural
+    tripMonitoring.status = addTripMonitoringRequestDTO.status
     tripMonitoring.tripToken = addTripMonitoringRequestDTO.tripToken
 
     return await this.tripMonitoringRepository.save(tripMonitoring);
@@ -228,11 +233,15 @@ export class TripsService {
     worksheetTripsMonitoring.columns = [
       { header: 'No', key: 'no', width: 10 },
       { header: 'Heart Rate', key: 'heartRate', width: 20 },
-      { header: 'Posisi Pedal Gas', key: 'posisiPedalGas', width: 10 },
-      { header: 'Rpm', key: 'rpm', width: 20 },
       { header: 'Latitude', key: 'latitude', width: 20 },
       { header: 'Longitude', key: 'longitude', width: 20 },
-      { header: 'Kondisi Kantuk', key: 'kondisiKantuk', width: 20 },
+      { header: 'Status', key: 'status', width: 20 },
+      { header: 'Kecepatan', key: 'kecepatan', width: 10 },
+      { header: 'Rpm', key: 'rpm', width: 20 },
+      { header: 'Thurttle', key: 'thurttle', width: 20 },
+      { header: 'Sudut Postural', key: 'sudutPostural', width: 20 },
+      { header: 'Kecepatan Postural', key: 'kecepatanPostural', width: 20 },
+      { header: 'Durasi Postural', key: 'durasiPostural', width: 20 },
       { header: 'Diambil Pada', key: 'createdAt', width: 20 },
     ];
 
@@ -250,12 +259,16 @@ export class TripsService {
       worksheetTripsMonitoring.addRow({
         no: index + 1,
         id: trip.id,
-        heartRate: parseFloat(trip.heartRate),
-        posisiPedalGas: trip.posisiPedalGas,
-        rpm: parseFloat(trip.rpm),
+        heartRate: trip.heartRate,
         latitude: parseFloat(trip.latitude),
         longitude: parseFloat(trip.longitude),
-        kondisiKantuk: trip.kondisiKantuk,
+        status: trip.status,
+        kecepatan: trip.kecepatan,
+        rpm: trip.rpm,
+        thurttle: trip.thurttle,
+        sudutPostural: trip.sudutPostural,
+        kecepatanPostural: trip.kecepatanPostural,
+        durasiPostural: trip.durasiPostural,
         createdAt: trip.createdAt.toISOString()
       });
     });

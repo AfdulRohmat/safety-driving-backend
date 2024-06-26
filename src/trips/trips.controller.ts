@@ -54,26 +54,13 @@ export class TripsController {
     return response.status(successResponse.statusCode).json(successResponse);
   }
 
+
+
   // addTripMonitoring
   // @UseGuards(JwtGuard)
-  @Get("/add-trip-monitoring")
+  @Post("/add-trip-monitoring")
   @UseInterceptors(NoFilesInterceptor())
-  async addTripMonitoring(
-    @Query('latitude') latitude: string,
-    @Query('longitude') longitude: string,
-    @Query('kecepatan') kecepatan: string,
-    @Query('kondisiKantuk') kondisiKantuk: string,
-    @Query('posisiPedalGas') posisiPedalGas: string,
-    @Query('tripToken') tripToken: string,
-    @Res() response: Response) {
-
-    const addTripMonitoringRequestDTO = new AddTripMonitoringRequestDTO()
-    addTripMonitoringRequestDTO.latitude = latitude
-    addTripMonitoringRequestDTO.longitude = longitude
-    addTripMonitoringRequestDTO.kecepatan = kecepatan
-    addTripMonitoringRequestDTO.kondisiKantuk = kondisiKantuk
-    addTripMonitoringRequestDTO.posisiPedalGas = posisiPedalGas
-    addTripMonitoringRequestDTO.tripToken = tripToken
+  async addTripMonitoring(@Body() addTripMonitoringRequestDTO: AddTripMonitoringRequestDTO, @Res() response: Response) {
 
     const responseData: TripMonitoring | void = await this.tripsService.addTripMonitoring(addTripMonitoringRequestDTO)
     const successResponse = new CommonResponseDto(200, 'Proses berhasil', responseData, null);
