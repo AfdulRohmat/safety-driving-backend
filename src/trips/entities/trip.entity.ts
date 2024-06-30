@@ -47,10 +47,10 @@ export class Trip {
     @Column({ name: 'trip_token' })
     tripToken: string;
 
-    @ManyToOne(() => Group, group => group.trips)
+    @ManyToOne(() => Group, group => group.trips, { eager: true })
     group: Group;
 
-    @ManyToOne(() => User, { nullable: true })
+    @ManyToOne(() => User, { nullable: true, eager: true },)
     driver: User;
 
     @CreateDateColumn({ name: "dimulai_pada", nullable: true })

@@ -269,10 +269,10 @@ export class TripsService {
     // DEFINE WORKBOOK
     const workbook = new ExcelJS.Workbook();
 
-    const worksheetInformasiUmum = workbook.addWorksheet(`Informasi Umum Perjalanan Tanggal ${jadwalPerjalananFormattedDate}`);
-    const worksheetTripsMonitoring = workbook.addWorksheet(`Data Monitoring Perjalanan Tanggal ${jadwalPerjalananFormattedDate}`);
-    const worksheetFacesMonitoring = workbook.addWorksheet(`Data Deteksi Muka Tanggal ${jadwalPerjalananFormattedDate}`);
-    const worksheetRingkasanPerjalanan = workbook.addWorksheet(`Data Rangkuman Perjalanan ${jadwalPerjalananFormattedDate}`);
+    const worksheetInformasiUmum = workbook.addWorksheet(`Informasi Umum Perjalanan `);
+    const worksheetTripsMonitoring = workbook.addWorksheet(`Data Monitoring Perjalanan `);
+    const worksheetFacesMonitoring = workbook.addWorksheet(`Data Deteksi Muka `);
+    const worksheetRingkasanPerjalanan = workbook.addWorksheet(`Data Rangkuman Perjalanan `);
 
     // Define columns
     worksheetRingkasanPerjalanan.columns = [
@@ -285,6 +285,11 @@ export class TripsService {
       { header: 'Nama Group', key: 'namaGroup', width: 20 },
       { header: 'Nama Driver', key: 'namaDriver', width: 20 },
       { header: 'Email Driver', key: 'emailDriver', width: 20 },
+      { header: 'Email Driver', key: 'emailDriver', width: 20 },
+      { header: 'Tinggi Badan Driver (cm)', key: 'tinggiBadan', width: 20 },
+      { header: 'Berat Badan Driver (kg)', key: 'beratBadan', width: 20 },
+      { header: 'Tekanan Darah Driver (mm Hg)', key: 'tekananDarah', width: 20 },
+      { header: 'Riwayat Penyakit Driver', key: 'riwayatPenyakit', width: 20 },
       { header: 'Jadwal Perjalanan', key: 'jadwalPerjalanan', width: 20 },
       { header: 'Alamat Awal', key: 'alamatAwal', width: 20 },
       { header: 'Alamat Tujuan', key: 'alamatTujuan', width: 20 },
@@ -325,6 +330,10 @@ export class TripsService {
       namaGroup: dataTrip.group.name,
       namaDriver: dataTrip.driver.username,
       emailDriver: dataTrip.driver.email,
+      tinggiBadan: parseFloat(dataTrip.tingiBadanDriver),
+      beratBadan: parseFloat(dataTrip.beratBadanDriver),
+      tekananDarah: dataTrip.tekananDarahDriver,
+      riwayatPenyakit: dataTrip.riwayatPenyakitDriver,
       jadwalPerjalanan: formatDate(dataTrip.jadwalPerjalanan),
       alamatAwal: dataTrip.alamatAwal,
       alamatTujuan: dataTrip.alamatTujuan,
@@ -336,16 +345,16 @@ export class TripsService {
       worksheetTripsMonitoring.addRow({
         no: index + 1,
         id: trip.id,
-        heartRate: trip.heartRate,
+        heartRate: parseFloat(trip.heartRate),
         latitude: parseFloat(trip.latitude),
         longitude: parseFloat(trip.longitude),
         status: trip.status,
-        kecepatan: trip.kecepatan,
-        rpm: trip.rpm,
-        thurttle: trip.thurttle,
-        sudutPostural: trip.sudutPostural,
-        kecepatanPostural: trip.kecepatanPostural,
-        durasiPostural: trip.durasiPostural,
+        kecepatan: parseFloat(trip.kecepatan),
+        rpm: parseFloat(trip.rpm),
+        thurttle: parseFloat(trip.thurttle),
+        sudutPostural: parseFloat(trip.sudutPostural),
+        kecepatanPostural: parseFloat(trip.kecepatanPostural),
+        durasiPostural: parseFloat(trip.durasiPostural),
         createdAt: trip.createdAt.toISOString()
       });
     });
