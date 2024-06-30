@@ -2,7 +2,7 @@ import { IsNotEmpty } from "class-validator";
 
 export class AddTripMonitoringRequestDTO {
     @IsNotEmpty()
-    heartRate: number;
+    heartRate: string;
 
     @IsNotEmpty()
     latitude: string;
@@ -14,22 +14,22 @@ export class AddTripMonitoringRequestDTO {
     status: string;
 
     @IsNotEmpty()
-    kecepatan: number;
+    kecepatan: string;
     
     @IsNotEmpty()
-    rpm: number;
+    rpm: string;
     
     @IsNotEmpty()
-    thurttle: number;
+    thurttle: string;
    
     @IsNotEmpty()
-    sudutPostural: number;
+    sudutPostural: string;
     
     @IsNotEmpty()
-    kecepatanPostural: number;
+    kecepatanPostural: string;
     
     @IsNotEmpty()
-    durasiPostural: number;
+    durasiPostural: string;
 
     @IsNotEmpty()
     tripToken: string

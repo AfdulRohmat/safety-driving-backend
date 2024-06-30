@@ -100,14 +100,14 @@ export class TripsController {
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
 
-    const dataStream$: Observable<TripMonitoring[]> = interval(10000).pipe(
+    const dataStream$: Observable<TripMonitoring[]> = interval(1000).pipe(
       switchMap(() => this.tripsService.getTripMonitoring(tripToken))
     );
 
     const subscription = dataStream$.subscribe({
       next: async (data: TripMonitoring[]) => {
         res.write(`data: ${JSON.stringify(data)}\n\n`);
-        await new Promise(resolve => setTimeout(resolve, 10000)); // Optional delay to control the stream rate
+        await new Promise(resolve => setTimeout(resolve, 1000)); // Optional delay to control the stream rate
       },
       error: (error) => {
         console.error('Error streaming data:', error);

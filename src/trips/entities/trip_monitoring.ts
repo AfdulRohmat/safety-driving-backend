@@ -7,7 +7,7 @@ export class TripMonitoring {
     id: number;
 
     @Column({ name: 'heart_rate' })
-    heartRate: number;
+    heartRate: string;
 
     @Column()
     latitude: string;
@@ -16,22 +16,22 @@ export class TripMonitoring {
     longitude: string;
 
     @Column()
-    kecepatan: number;
+    kecepatan: string;
 
     @Column()
-    rpm: number;
+    rpm: string;
 
     @Column()
-    thurttle: number;
+    thurttle: string;
 
     @Column({ name: 'sudut_postural' })
-    sudutPostural: number;
+    sudutPostural: string;
 
     @Column({ name: 'kecepatan_postural' })
-    kecepatanPostural: number;
+    kecepatanPostural: string;
 
     @Column({ name: 'durasi_postural' })
-    durasiPostural: number;
+    durasiPostural: string;
 
     @Column({ name: 'status' })
     status: string;
