@@ -54,6 +54,15 @@ export class TripsController {
     return response.status(successResponse.statusCode).json(successResponse);
   }
 
+  @UseGuards(JwtGuard)
+  @Post("/delete-trip")
+  @UseInterceptors(NoFilesInterceptor())
+  async deleteTrip(@Body('tripToken') tripToken: string, @Res() response: Response) {
+    const responseData = await this.tripsService.deleteTrip(tripToken)
+    const successResponse = new CommonResponseDto(200, 'Proses berhasil', responseData, null);
+    return response.status(successResponse.statusCode).json(successResponse);
+  }
+
 
 
   // addTripMonitoring
@@ -69,22 +78,11 @@ export class TripsController {
 
   // Add Face Monitoring
   // @UseGuards(JwtGuard)
-  @Get("/add-face-monitoring")
+  @Post("/add-face-monitoring")
   @UseInterceptors(NoFilesInterceptor())
   async addFaceMonitoring(
-    @Query('perclos') perclos: string,
-    @Query('pebr') pebr: string,
-    @Query('nYawn') nYawn: string,
-    @Query('kondisiKantuk') kondisiKantuk: string,
-    @Query('tripToken') tripToken: string,
+    @Body() addFaceMonitoringRequestDTO: AddFaceMonitoringRequestDTO,
     @Res() response: Response) {
-
-    const addFaceMonitoringRequestDTO = new AddFaceMonitoringRequestDTO()
-    addFaceMonitoringRequestDTO.perclos = perclos
-    addFaceMonitoringRequestDTO.pebr = pebr
-    addFaceMonitoringRequestDTO.nYawn = nYawn
-    addFaceMonitoringRequestDTO.kondisiKantuk = kondisiKantuk
-    addFaceMonitoringRequestDTO.tripToken = tripToken
 
     const responseData: FaceMonitoring | void = await this.tripsService.addFaceMonitoring(addFaceMonitoringRequestDTO)
     const successResponse = new CommonResponseDto(200, 'Proses berhasil', responseData, null);

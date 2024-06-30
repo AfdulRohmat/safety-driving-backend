@@ -53,6 +53,15 @@ export class Trip {
     @ManyToOne(() => User, { nullable: true })
     driver: User;
 
+    @CreateDateColumn({ name: "dimulai_pada", nullable: true })
+    dimulaiPada: Date | null;
+
+    @CreateDateColumn({ name: "diakhiri_pada", nullable: true })
+    diakhiriPada: Date | null;
+
+    @Column({ name: "durasi_perjalanan", nullable: true })
+    durasiPerjalanan: string;
+
     @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     createdAt: Date;
 

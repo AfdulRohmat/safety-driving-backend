@@ -8,15 +8,6 @@ export class FaceMonitoring {
     @Column()
     perclos: string;
 
-    @Column()
-    pebr: string;
-
-    @Column({ name: 'n-yawn' })
-    nYawn: string;
-
-    @Column({ name: 'kondisi_kantuk' })
-    kondisiKantuk: string;
-
     @Column({ name: 'trip_token' })
     tripToken: string;
 

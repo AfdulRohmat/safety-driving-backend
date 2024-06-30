@@ -65,6 +65,9 @@ export class TripsService {
     trip.driver = userDriver
     trip.group = group
 
+    trip.dimulaiPada = null
+    trip.diakhiriPada = null
+
     // generate 6 digit random number then convert to string
     const generatedToken: number = Math.floor(100000 + Math.random() * 900000)
     trip.tripToken = generatedToken.toString()
@@ -111,10 +114,38 @@ export class TripsService {
     })
     if (!dataTrip) throw new BadRequestException('Proses gagal', { cause: new Error(), description: 'Data trip tidak valid' })
 
+    if (dataTrip.status === 'Belum Dimulai' && status === 'Dalam Perjalanan') {
+      dataTrip.dimulaiPada = new Date();
+    }
+
+    if (dataTrip.status === 'Dalam Perjalanan' && status === 'Selesai') {
+      dataTrip.diakhiriPada = new Date();
+    }
+
     dataTrip.status = status
+
+    // kalkulasi durasi
+    if (dataTrip.dimulaiPada !== null && dataTrip.diakhiriPada !== null) {
+      const differenceInMs = dataTrip.diakhiriPada.getTime() - dataTrip.dimulaiPada.getTime();
+      const differenceInMinutes = differenceInMs / 1000 / 60;
+      dataTrip.durasiPerjalanan = differenceInMinutes.toString();
+    }
+
     this.tripRepository.save(dataTrip)
 
     return dataTrip;
+  }
+
+  // Delete Trip
+  async deleteTrip(tripToken: string,) {
+    const dataTrip = await this.tripRepository.findOne({
+      where: {
+        tripToken: tripToken
+      }
+    })
+    if (!dataTrip) throw new BadRequestException('Proses gagal', { cause: new Error(), description: 'Data trip tidak valid' })
+
+    await this.tripRepository.delete({ tripToken })
   }
 
   // Add Trip Monitoring
@@ -156,9 +187,6 @@ export class TripsService {
     const faceMonitoring = new FaceMonitoring()
 
     faceMonitoring.perclos = addFaceMonitoringRequestDTO.perclos
-    faceMonitoring.pebr = addFaceMonitoringRequestDTO.pebr
-    faceMonitoring.nYawn = addFaceMonitoringRequestDTO.nYawn
-    faceMonitoring.kondisiKantuk = addFaceMonitoringRequestDTO.kondisiKantuk
     faceMonitoring.tripToken = addFaceMonitoringRequestDTO.tripToken
 
     return await this.faceMonitoringRepository.save(faceMonitoring);
@@ -248,9 +276,6 @@ export class TripsService {
     worksheetFacesMonitoring.columns = [
       { header: 'No', key: 'no', width: 10 },
       { header: 'PERCLOS', key: 'perclos', width: 20 },
-      { header: 'PEBR', key: 'pebr', width: 10 },
-      { header: 'N-Yawn', key: 'nYawn', width: 20 },
-      { header: 'Kondisi Kantuk', key: 'kondisiKantuk', width: 20 },
       { header: 'Diambil Pada', key: 'createdAt', width: 20 },
     ];
 
@@ -278,9 +303,6 @@ export class TripsService {
         no: index + 1,
         id: face.id,
         perclos: parseFloat(face.perclos),
-        pebr: parseFloat(face.pebr),
-        nYawn: parseFloat(face.nYawn),
-        kondisiKantuk: face.kondisiKantuk,
         createdAt: face.createdAt.toISOString()
       });
     });

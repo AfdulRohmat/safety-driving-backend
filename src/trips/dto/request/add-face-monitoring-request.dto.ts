@@ -5,14 +5,5 @@ export class AddFaceMonitoringRequestDTO {
     perclos: string;
 
     @IsNotEmpty()
-    pebr: string;
-
-    @IsNotEmpty()
-    nYawn: string;
-
-    @IsNotEmpty()
-    kondisiKantuk: string;
-
-    @IsNotEmpty()
     tripToken: string
 }
