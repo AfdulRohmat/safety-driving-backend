@@ -34,4 +34,16 @@ export class AddTripRequestDTO {
     @IsNotEmpty()
     driverId: number
 
+    @IsNotEmpty()
+    tinggiBadan: string;
+
+    @IsNotEmpty()
+    beratBadan: string;
+
+    @IsNotEmpty()
+    tekananDarah: string;
+
+    @IsNotEmpty()
+    riwayatPenyakit: string;
+
 }

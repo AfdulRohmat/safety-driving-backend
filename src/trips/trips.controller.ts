@@ -2,16 +2,16 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, UseInterc
 import { TripsService } from './trips.service';
 import { JwtGuard } from 'src/auth/guards/jwt-auth.guard';
 import { NoFilesInterceptor } from '@nestjs/platform-express';
-import { AddTripRequestDTO } from './dto/request/add-travel-note-request.dto';
+import { AddTripRequestDTO } from './dto/request/add-trip-request.dto';
 import { ProsesPerjalananEnum, Trip } from './entities/trip.entity';
 import { CommonResponseDto } from 'src/utils/common-response.dto';
 import { Response, query } from 'express';
 import { GetTravelRequestDTO } from './dto/request/get-travel-request.dto';
 import { AddTripMonitoringRequestDTO } from './dto/request/add-trip-monitoring-request.dto';
-import { TripMonitoring } from './entities/trip_monitoring';
+import { TripMonitoring } from './entities/trip_monitoring.entity';
 import { interval, Observable, switchMap } from 'rxjs';
 import { AddFaceMonitoringRequestDTO } from './dto/request/add-face-monitoring-request.dto';
-import { FaceMonitoring } from './entities/face_monitoring';
+import { FaceMonitoring } from './entities/face_monitoring.entity';
 import { formatDate } from 'src/utils/format-date';
 
 @Controller('trips')

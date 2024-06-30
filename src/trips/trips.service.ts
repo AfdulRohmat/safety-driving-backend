@@ -2,16 +2,17 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProsesPerjalananEnum, Trip } from './entities/trip.entity';
 import { Repository } from 'typeorm';
-import { AddTripRequestDTO } from './dto/request/add-travel-note-request.dto';
+import { AddTripRequestDTO } from './dto/request/add-trip-request.dto';
 import { User } from 'src/users/entities/user.entity';
 import { Group } from 'src/groups/entities/group.entity';
 import { GetTravelRequestDTO } from './dto/request/get-travel-request.dto';
-import { TripMonitoring } from './entities/trip_monitoring';
+import { TripMonitoring } from './entities/trip_monitoring.entity';
 import { AddTripMonitoringRequestDTO } from './dto/request/add-trip-monitoring-request.dto';
 import { AddFaceMonitoringRequestDTO } from './dto/request/add-face-monitoring-request.dto';
-import { FaceMonitoring } from './entities/face_monitoring';
+import { FaceMonitoring } from './entities/face_monitoring.entity';
 import * as ExcelJS from 'exceljs';
 import { formatDate } from 'src/utils/format-date';
+import { formatDuration } from 'src/utils/format-duration';
 
 @Injectable()
 export class TripsService {
@@ -31,6 +32,7 @@ export class TripsService {
     @InjectRepository(Group)
     private readonly groupRepository: Repository<Group>,
   ) { }
+
 
   async addTrip(addTripRequestDTO: AddTripRequestDTO): Promise<Trip> {
     const userDriver = await this.userRepository.findOne({
@@ -67,6 +69,11 @@ export class TripsService {
 
     trip.dimulaiPada = null
     trip.diakhiriPada = null
+
+    trip.tingiBadanDriver = addTripRequestDTO.tinggiBadan
+    trip.beratBadanDriver = addTripRequestDTO.beratBadan
+    trip.tekananDarahDriver = addTripRequestDTO.tekananDarah
+    trip.riwayatPenyakitDriver = addTripRequestDTO.riwayatPenyakit
 
     // generate 6 digit random number then convert to string
     const generatedToken: number = Math.floor(100000 + Math.random() * 900000)
@@ -251,13 +258,41 @@ export class TripsService {
     queryFacepMonitoring.orderBy('fm.createdAt', 'DESC');
     const facesMonitoring = await queryFacepMonitoring.getMany();
 
+    // MENGHITUNG RATA-RATA KECEPATAN
+    const totalSpeed = tripsMonitoring.reduce((sum, data) => sum + parseFloat(data.kecepatan), 0);
+    const averageSpeed = totalSpeed / tripsMonitoring.length;
+
+    // MENGHITUNG RATA-RATA HEART RATE
+    const totalHeartRate = tripsMonitoring.reduce((sum, data) => sum + parseFloat(data.heartRate), 0);
+    const averageHeartRate = totalHeartRate / tripsMonitoring.length;
+
     // DEFINE WORKBOOK
     const workbook = new ExcelJS.Workbook();
 
-    const worksheetTripsMonitoring = workbook.addWorksheet(`Data Perjalanan Tanggal ${jadwalPerjalananFormattedDate}`);
+    const worksheetInformasiUmum = workbook.addWorksheet(`Informasi Umum Perjalanan Tanggal ${jadwalPerjalananFormattedDate}`);
+    const worksheetTripsMonitoring = workbook.addWorksheet(`Data Monitoring Perjalanan Tanggal ${jadwalPerjalananFormattedDate}`);
     const worksheetFacesMonitoring = workbook.addWorksheet(`Data Deteksi Muka Tanggal ${jadwalPerjalananFormattedDate}`);
+    const worksheetRingkasanPerjalanan = workbook.addWorksheet(`Data Rangkuman Perjalanan ${jadwalPerjalananFormattedDate}`);
 
     // Define columns
+    worksheetRingkasanPerjalanan.columns = [
+      { header: 'Rata Rata Kecepatan Kendaraan (KM / Jam)', key: 'averageSpeed', width: 40 },
+      { header: 'Rata Rata Data Heart Rate Pengemudi', key: 'averageHeartRate', width: 40 },
+      { header: 'Durasi Perjalanan', key: 'durasi', width: 40 },
+    ]
+
+    worksheetInformasiUmum.columns = [
+      { header: 'Nama Group', key: 'namaGroup', width: 20 },
+      { header: 'Nama Driver', key: 'namaDriver', width: 20 },
+      { header: 'Email Driver', key: 'emailDriver', width: 20 },
+      { header: 'Jadwal Perjalanan', key: 'jadwalPerjalanan', width: 20 },
+      { header: 'Alamat Awal', key: 'alamatAwal', width: 20 },
+      { header: 'Alamat Tujuan', key: 'alamatTujuan', width: 20 },
+      { header: 'Nama Kendaraan', key: 'namaKendaraan', width: 20 },
+      { header: 'Nomor Polisi', key: 'noPolisi', width: 20 },
+
+    ]
+
     worksheetTripsMonitoring.columns = [
       { header: 'No', key: 'no', width: 10 },
       { header: 'Heart Rate', key: 'heartRate', width: 20 },
@@ -280,6 +315,23 @@ export class TripsService {
     ];
 
     // Add rows
+    worksheetRingkasanPerjalanan.addRow({
+      averageSpeed: averageSpeed,
+      averageHeartRate: averageHeartRate,
+      durasi: formatDuration(parseFloat(dataTrip.durasiPerjalanan)),
+    })
+
+    worksheetInformasiUmum.addRow({
+      namaGroup: dataTrip.group.name,
+      namaDriver: dataTrip.driver.username,
+      emailDriver: dataTrip.driver.email,
+      jadwalPerjalanan: formatDate(dataTrip.jadwalPerjalanan),
+      alamatAwal: dataTrip.alamatAwal,
+      alamatTujuan: dataTrip.alamatTujuan,
+      namaKendaraan: dataTrip.namaKendaraan,
+      noPolisi: dataTrip.noPolisi,
+    })
+
     tripsMonitoring.forEach((trip, index) => {
       worksheetTripsMonitoring.addRow({
         no: index + 1,

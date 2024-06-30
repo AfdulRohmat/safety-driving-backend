@@ -1,7 +1,7 @@
 import { Group } from "src/groups/entities/group.entity";
 import { User } from "src/users/entities/user.entity";
 import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { TripMonitoring } from "./trip_monitoring";
+import { TripMonitoring } from "./trip_monitoring.entity";
 
 export enum ProsesPerjalananEnum {
     BELUM_DIMULAI = 'Belum Dimulai',
@@ -61,6 +61,18 @@ export class Trip {
 
     @Column({ name: "durasi_perjalanan", nullable: true })
     durasiPerjalanan: string;
+
+    @Column({ name: "tinggi_badan_driver", nullable: true })
+    tingiBadanDriver: string;
+
+    @Column({ name: "berat_badan_driver", nullable: true })
+    beratBadanDriver: string;
+
+    @Column({ name: "tekanan_darah_driver", nullable: true })
+    tekananDarahDriver: string;
+
+    @Column({ name: "riwayat_penyakit_driver", nullable: true })
+    riwayatPenyakitDriver: string;
 
     @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     createdAt: Date;
